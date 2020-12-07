@@ -32,6 +32,9 @@ void loop(void) {
   Serial.print("Visible: "); Serial.print(full - ir);   Serial.print("\t");
 
   Serial.print("Lux: "); Serial.println(tsl.calculateLux(full, ir));
+  
+  
+
 
   delay(500);
 }

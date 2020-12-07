@@ -2,6 +2,7 @@
 #include "TSL2561.h"
 
 TSL2561 tsl(TSL2561_ADDR_FLOAT);
+const int ledStatus = 13;
 
 void setup(void) {
   Serial.begin(9600);
@@ -13,28 +14,32 @@ void setup(void) {
     while (1);
   }
 
-
   tsl.setGain(TSL2561_GAIN_16X);      // set 16x gain (for dim situations)
   tsl.setTiming(TSL2561_INTEGRATIONTIME_13MS);  // shortest integration time (bright light)
-
+  pinMode(ledStatus, OUTPUT);
 }
 
 void loop(void) {
   uint16_t x = tsl.getLuminosity(TSL2561_VISIBLE);
   Serial.println(x, DEC);
-
   uint32_t lum = tsl.getFullLuminosity();
   uint16_t ir, full;
   ir = lum >> 16;
   full = lum & 0xFFFF;
+  
+  
   Serial.print("IR: "); Serial.print(ir);   Serial.print("\t\t");
   Serial.print("Full: "); Serial.print(full);   Serial.print("\t");
   Serial.print("Visible: "); Serial.print(full - ir);   Serial.print("\t");
-
   Serial.print("Lux: "); Serial.println(tsl.calculateLux(full, ir));
-  
-  
 
+
+    if(tsl.calculateLux(full, ir) >= 500){
+      digitalWrite(ledStatus, HIGH); 
+    }
+    else if(tsl.calculateLux(full, ir) < 500){
+       digitalWrite(ledStatus, LOW); 
+    }
 
   delay(500);
 }
